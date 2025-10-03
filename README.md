@@ -1,16 +1,38 @@
-# React + Vite
+# 📌 React Todo App  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ứng dụng Todo App được xây dựng bằng **ReactJS** với giao diện hiện đại, dễ sử dụng, có hỗ trợ quản lý task, progress bar và hiển thị thông tin thời gian tạo/cập nhật.  
 
-Currently, two official plugins are available:
+## 🚀 Tính năng
+- ✅ Thêm, sửa, xóa công việc  
+- ✅ Đánh dấu công việc đã hoàn thành  
+- ✅ Thanh progress bar hiển thị phần trăm hoàn thành  
+- ✅ Hiển thị ngày tạo & ngày cập nhật công việc  
+- ✅ UI responsive, sử dụng **Tailwind CSS**  
+- ✅ Icon đẹp với **Lucide React**  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Công nghệ sử dụng
+- [ReactJS](https://react.dev/)  
+- [Vite](https://vitejs.dev/) (nếu bạn dùng Vite) hoặc Create React App  
+- [Tailwind CSS](https://tailwindcss.com/)  
+- [Lucide React](https://lucide.dev/)  
 
-## React Compiler
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ⚡ Cài đặt & Chạy dự án
 
-## Expanding the ESLint configuration
+1. **Clone repo**  
+```bash
+git clone https://github.com/your-username/todo-app.git
+cd todo-app
+```
+2. **Cài đặt npm**
+```
+npm install
+```
+3. **Chạy dự án**
+```
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+
