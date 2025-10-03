@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/todo";
+const API_URL = import.meta.env.VITE_API_URL + "/todo";
 
 // Load từ server
 export const fetchTodos = createAsyncThunk("todo/fetchTodos", async () => {
   const res = await axios.get(API_URL);
+  // Nếu BE trả về { message, todos }
   return res.data;
 });
 
@@ -77,7 +78,7 @@ const todoSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchTodos.fulfilled, (state, action) => {
-        state.items = action.payload;
+        state.items = action.payload; // luôn là array
       })
       .addCase(addTodoServer.fulfilled, (state, action) => {
         state.items.unshift(action.payload.todo);
