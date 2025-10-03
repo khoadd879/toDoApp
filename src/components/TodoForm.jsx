@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Check, X } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { addTodo, setIsAddingTodo } from "../store/todoSlice";
+import { addTodoServer, setIsAddingTodo } from "../store/todoSlice";
 
 function TodoForm({
   OnSubmit,
@@ -21,7 +21,7 @@ function TodoForm({
       if (OnSubmit) {
         OnSubmit(trimmedText);
       } else {
-        dispatch(addTodo(trimmedText));
+        dispatch(addTodoServer(trimmedText));
       }
       setText("");
     }

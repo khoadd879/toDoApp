@@ -1,101 +1,111 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const loadTodos = () => {
-  try {
-    const saved = localStorage.getItem("todos");
-    return saved ? JSON.parse(saved) : [];
-  } catch {
-    return [];
+const API_URL = "http://localhost:3000/todo";
+
+// Load từ server
+export const fetchTodos = createAsyncThunk("todo/fetchTodos", async () => {
+  const res = await axios.get(API_URL);
+  return res.data;
+});
+
+export const addTodoServer = createAsyncThunk(
+  "todo/addTodoServer",
+  async (text) => {
+    const res = await axios.post(API_URL, { text });
+    return res.data; // { message, todo, status }
   }
-};
+);
 
-const saveTodos = (todo) => {
-  try {
-    localStorage.setItem("todos", JSON.stringify(todo));
-  } catch (error) {
-    console.log("Failed to save todos", error);
+export const toggleTodoServer = createAsyncThunk(
+  "todo/toggleTodoServer",
+  async (id) => {
+    const res = await axios.patch(`${API_URL}/${id}/toggle`);
+    return res.data; // { message, todo, status }
   }
-};
+);
 
-const initialState = {
-  items: loadTodos(),
-  filter: "all",
-  isAddingTodo: false,
-};
+export const deleteTodoServer = createAsyncThunk(
+  "todo/deleteTodoServer",
+  async (id) => {
+    await axios.delete(`${API_URL}/${id}`);
+    return id;
+  }
+);
+
+export const updateTodoServer = createAsyncThunk(
+  "todo/updateTodoServer",
+  async ({ id, updates }) => {
+    const res = await axios.patch(`${API_URL}/${id}`, updates);
+    return res.data; // { message, todo, status }
+  }
+);
+
+export const markAllCompleteServer = createAsyncThunk(
+  "todo/markAllCompleteServer",
+  async () => {
+    const res = await axios.patch(`${API_URL}/mark-all`);
+    return res.data; // { message, todos, status }
+  }
+);
+
+// ✅ New: clear completed todos (BE bulk)
+export const clearCompletedServer = createAsyncThunk(
+  "todo/clearCompletedServer",
+  async () => {
+    const res = await axios.delete(`${API_URL}/completed`);
+    return res.data; // { message, todos, status }
+  }
+);
 
 const todoSlice = createSlice({
   name: "todo",
-  initialState,
+  initialState: {
+    items: [],
+    filter: "all",
+    isAddingTodo: false,
+  },
   reducers: {
     setIsAddingTodo: (state, action) => {
       state.isAddingTodo = action.payload;
     },
-
-    addTodo: (state, action) => {
-      const newTodo = {
-        id: crypto.randomUUID(),
-        text: action.payload.trim(),
-        completed: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      state.items.unshift(newTodo);
-      state.isAddingTodo = false;
-      saveTodos(state.items);
-    },
-
-    toggleTodo: (state, action) => {
-      const todo = state.items.find((todo) => todo.id === action.payload);
-      if (todo) {
-        todo.completed = !todo.completed;
-        todo.updatedAt = new Date().toISOString();
-        saveTodos(state.items);
-      }
-    },
-
-    deleteTodo: (state, action) => {
-      state.items = state.items.filter((todo) => todo.id !== action.payload);
-      saveTodos(state.items);
-    },
-
-    updateTodo: (state, action) => {
-      const { id, updates } = action.payload;
-      const todo = state.items.find((todo) => todo.id === id);
-
-      if (todo) {
-        Object.assign(todo, updates, { updatedAt: new Date().toISOString() });
-      }
-    },
-
     setFilter: (state, action) => {
       state.filter = action.payload;
     },
+  },
 
-    markAllComplete: (state) => {
-      const hasInComplete = state.items.some((todo) => !todo.completed);
-      state.items.forEach((todo) => {
-        todo.completed = hasInComplete;
-        todo.updatedAt = new Date().toISOString();
-        saveTodos(state.items);
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTodos.fulfilled, (state, action) => {
+        state.items = action.payload;
+      })
+      .addCase(addTodoServer.fulfilled, (state, action) => {
+        state.items.unshift(action.payload.todo);
+        state.isAddingTodo = false;
+      })
+      .addCase(toggleTodoServer.fulfilled, (state, action) => {
+        const updated = action.payload.todo;
+        const idx = state.items.findIndex((t) => t.id === updated.id);
+        if (idx !== -1) state.items[idx] = updated;
+      })
+      .addCase(deleteTodoServer.fulfilled, (state, action) => {
+        state.items = state.items.filter((t) => t.id !== action.payload);
+      })
+      .addCase(updateTodoServer.fulfilled, (state, action) => {
+        const updated = action.payload.todo;
+        const idx = state.items.findIndex((t) => t.id === updated.id);
+        if (idx !== -1) state.items[idx] = updated;
+      })
+      // ✅ Bulk API handle
+      .addCase(markAllCompleteServer.fulfilled, (state, action) => {
+        state.items = action.payload.todos;
+      })
+      .addCase(clearCompletedServer.fulfilled, (state, action) => {
+        state.items = action.payload.todos;
       });
-    },
-
-    clearCompleted: (state) => {
-      state.items = state.items.filter((todo) => !todo.completed);
-      saveTodos(state.items);
-    },
   },
 });
 
-export const {
-  setIsAddingTodo,
-  addTodo,
-  toggleTodo,
-  deleteTodo,
-  updateTodo,
-  setFilter,
-  markAllComplete,
-  clearCompleted,
-} = todoSlice.actions;
+export const { setIsAddingTodo, setFilter } = todoSlice.actions;
 
 export default todoSlice.reducer;

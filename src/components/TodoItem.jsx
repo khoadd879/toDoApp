@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Calendar, Check, Edit3, Trash2 } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { deleteTodo, toggleTodo, updateTodo } from "../store/todoSlice";
+import {
+  deleteTodoServer,
+  toggleTodoServer,
+  updateTodoServer,
+} from "../store/todoSlice";
 import TodoForm from "./TodoForm";
 
 function TodoItem({ todo, index }) {
@@ -10,11 +14,11 @@ function TodoItem({ todo, index }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleToggle = () => {
-    dispatch(toggleTodo(todo.id));
+    dispatch(toggleTodoServer(todo.id));
   };
 
   const handleUpdate = (text) => {
-    dispatch(updateTodo({ id: todo.id, updates: { text: text.trim() } }));
+    dispatch(updateTodoServer({ id: todo.id, updates: { text: text.trim() } }));
     setIsEditing(false);
   };
 
@@ -34,7 +38,7 @@ function TodoItem({ todo, index }) {
   const handleDelete = () => {
     setIsDeleting(true);
     setTimeout(() => {
-      dispatch(deleteTodo(todo.id), 200);
+      dispatch(deleteTodoServer(todo.id), 200);
     });
   };
   const formatDate = (dateString) => {

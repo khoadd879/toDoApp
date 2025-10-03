@@ -6,7 +6,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import TodoFilter from "./TodoFilters";
 import TodoForm from "./TodoForm";
 import TodoItem from "./TodoItem";
@@ -19,10 +19,11 @@ import {
   selectTodosStats,
 } from "../store/selectors";
 import {
-  clearCompleted,
-  markAllComplete,
   setFilter,
   setIsAddingTodo,
+  fetchTodos,
+  markAllCompleteServer,
+  clearCompletedServer,
 } from "../store/todoSlice";
 
 function TodoApp() {
@@ -36,6 +37,10 @@ function TodoApp() {
     dispatch(setFilter(newFilter));
   };
 
+  useEffect(() => {
+    dispatch(fetchTodos());
+  }, [dispatch]);
+
   console.log(todo);
 
   const handleAddTodoClick = () => {
@@ -43,11 +48,11 @@ function TodoApp() {
   };
 
   const handleMarkComplete = () => {
-    dispatch(markAllComplete());
+    dispatch(markAllCompleteServer());
   };
 
   const handleClearComplete = () => {
-    dispatch(clearCompleted());
+    dispatch(clearCompletedServer());
   };
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-gray-300 py-8 px-4">
@@ -192,9 +197,6 @@ function TodoApp() {
             )}
           </div>
         </div>
-
-        {/*Footer Info */}
-        <div className="text-center mt-6 text-sm text-gray-700">Footer</div>
       </div>
     </div>
   );
